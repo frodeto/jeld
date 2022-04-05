@@ -1,8 +1,11 @@
 # Jeld
 
-__WORK IN PROGRESS__
+__*** WORK IN PROGRESS ***__
 
 For testing out Java api to Elasticsearch 8
+
+https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/index.html
+https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/8.1/_basic_authentication.html
 
 ## Prerequisites
 - Maven
