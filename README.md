@@ -1,5 +1,7 @@
 # Jeld
 
+For testing out Java api to Elasticsearch 8
+
 ## Prerequisites
 - Maven
 - Java 17
