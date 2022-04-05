@@ -1,5 +1,7 @@
 # Jeld
 
+__WORK IN PROGRESS__
+
 For testing out Java api to Elasticsearch 8
 
 ## Prerequisites
