@@ -9,80 +9,113 @@ import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import com.google.gson.Gson;
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class Jeld {
 
+    private ElasticsearchClient esClient;
+
     public static void main(String[] args) {
-        Gson gson = new Gson();
-        try (FileWriter fw = new FileWriter("jeld.json", true);
-             BufferedWriter bufferedWriter = new BufferedWriter(fw)) {
-            for (int i = 0; i < 100; i++) {
-                bufferedWriter.write(gson.toJson(Ad.buildRandomAd()));
-                bufferedWriter.newLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (args.length < 3) {
+            System.out.println("Provide elastic http-host, username and password as the three first program arguments");
             System.exit(-1);
         }
+        try {
+            String path = new File(".").getCanonicalPath();
+            System.out.println("Working directory: " + path);
+        } catch (IOException e) {
+            System.out.println("Could not find pwd");
+            System.exit(-1);
+        }
+        new Jeld().test(args[0], args[1], args[2]);
+    }
 
-        try (RestClient restClient = RestClient.builder(new HttpHost("localhost", 9200)).build()) {
+    void test(String httpHost, String user, String pw) {
+        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(user, pw));
+
+        RestClientBuilder builder = RestClient.builder(
+                        new HttpHost(httpHost, 9200))
+                .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
+                        .setDefaultCredentialsProvider(credentialsProvider));
+
+        try (RestClient restClient = builder.build()) {
+
             ElasticsearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
-            ElasticsearchClient esClient = new ElasticsearchClient(transport);
+            esClient = new ElasticsearchClient(transport);
 
-            boolean created = createIndex(esClient);
-            if (!created) {
+            boolean created = createIndexIfNeeded();
+            if (! created) {
                 System.out.println("Could not create index");
-                System.exit(-1);
+                System.exit(- 1);
             }
-
-            try (InputStream input = new FileInputStream("/jeld.json")) {
-                CreateIndexRequest req = CreateIndexRequest.of(b -> b
-                        .index("ad-index")
-                        .withJson(input)
-                );
-            }
-
-            try(FileReader file = new FileReader(new File("/Users/frodetorvund/dev/jeld", "jeld.json"));) {
-                IndexRequest<JsonData> req;
-
-                req = IndexRequest.of(b -> b
-                        .index("ad-index")
-                        .withJson(file)
-                );
-                esClient.index(req);
-            }
+            populateIndex();
 
         } catch (IOException e) {
             e.printStackTrace();
-            System.exit(-1);
+            System.exit(- 1);
         }
     }
 
-    static boolean createIndex(ElasticsearchClient esClient) {
+    private void populateIndex() throws IOException {
+        List<Ad> ads = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            ads.add(Ad.buildRandomAd());
+        }
+
+        Gson gson = new Gson();
+        ads.forEach(ad -> {
+            System.out.println(" *** " + gson.toJson(ad));
+            try {
+                esClient.index(IndexRequest.of(b -> b
+                        .index("ad-index")
+                        .document(ad)));
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("Failed to index");
+            }
+        });
+    }
+
+    boolean createIndexIfNeeded() {
+        String index = CreateIndexRequest.of(builder -> builder.index("ad-index")).index();
+        if (index != null) return true;
         boolean created = false;
-        try(InputStream input = Jeld.class.getResourceAsStream("ad-index.json");) {
+        try(FileReader input = new FileReader(new File(new File(".").getCanonicalPath(), "ad-index.json"));) {
             CreateIndexRequest req = CreateIndexRequest.of(b -> b
-                    .index("some-index")
+                    .index("ad-index")
                     .withJson(input)
             );
 
-            created = esClient.indices().create(req).acknowledged();
+            created = this.esClient.indices().create(req).acknowledged();
         } catch (IOException e) {
             e.printStackTrace();
         }
         return created;
     }
 
-    private static void reCreateFile(String fileName) throws IOException {
-        try (FileWriter fw = new FileWriter(fileName, false); // overwrite
-             BufferedWriter bufferedWriter = new BufferedWriter(fw)) {
-            bufferedWriter.write(";");
-            bufferedWriter.newLine();
+    private void createJsonDataFile() {
+        Gson gson = new Gson();
+        List<Ad> ads = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            ads.add(Ad.buildRandomAd());
+        }
+        try (FileWriter fw = new FileWriter("jeld.json", true);
+                BufferedWriter bufferedWriter = new BufferedWriter(fw)) {
+                bufferedWriter.write(gson.toJson(ads));
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(-1);
         }
     }
 

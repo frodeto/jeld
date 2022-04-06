@@ -9,7 +9,7 @@ https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/8.1/_basic_
 
 ## Prerequisites
 - Maven
-- Java 17
+- JDK 17
 - Elasticsearch 8
 
 My Mac environment:
