@@ -4,7 +4,8 @@
       "key": { "type": "text" },
       "type": { "type": "text" },
       "h1": { "type": "text" },
-      "v1": { "type": "text" }
+      "v1": { "type": "text" },
+      "dato": { "type": "text" }
     }
   }
 }

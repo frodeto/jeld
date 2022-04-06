@@ -6,6 +6,7 @@ For testing out Java api to Elasticsearch 8
 
 https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/index.html
 https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/8.1/_basic_authentication.html
+https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/api-conventions.html
 
 ## Prerequisites
 - Maven
