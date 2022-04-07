@@ -8,6 +8,8 @@ https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/ind
 https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/8.1/_basic_authentication.html
 https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/api-conventions.html
 https://linuxhint.com/boolean-query-elasticsearch/
+https://spinscale.de/posts/2022-03-03-running-the-elasticcc-platform-part-2.html#why-a-new-client
+https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/java-term-level-queries.html
 
 ## Prerequisites
 - Maven
