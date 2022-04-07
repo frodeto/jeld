@@ -5,7 +5,7 @@
       "type": { "type": "text" },
       "h1": { "type": "text" },
       "v1": { "type": "text" },
-      "dato": { "type": "text" }
+      "dato": { "type": "date", "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd'T'HH:mm:ss.SSSZ||epoch_millis" }
     }
   }
 }
