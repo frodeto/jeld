@@ -26,12 +26,3 @@ $ mvn --version
     OS name: "mac os x", version: "12.3", arch: "aarch64", family: "mac"
 ```
 
-## Build it with Maven
-```
-> mvn clean install spring-boot:repackage
-```
-
-## Run it
-```
-> java -jar ./target/jeld.jar
-```
