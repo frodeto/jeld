@@ -1,4 +1,4 @@
-package no.torvundconsulting;
+package no.torvundconsulting.gsontypeadapters;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
