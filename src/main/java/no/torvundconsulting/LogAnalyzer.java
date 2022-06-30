@@ -10,17 +10,15 @@ import java.util.concurrent.atomic.AtomicLong;
 public class LogAnalyzer {
     public static void main(String[] args) {
         Gson gson = new Gson();
-        List<String> entries = LogParsers.readJsonFromCsvColumn(
+        List<String> kundeEntries = LogParsers.readJsonFromCsvColumn(
                 "src/main/resources/kunde_search_7_days.csv",
                 "_raw",
                 "Entity: ");
-        System.out.println(entries.size());
-        //System.out.println("Parse failures: " + entries.stream().filter(s -> s.equals("{}")).count());
+        System.out.println("Kunde-entries: " + kundeEntries.size());
 
         System.out.println();
         System.out.println();
-
-        List<CustomerEntity> customerEntities = entries.stream()
+        List<CustomerEntity> customerEntities = kundeEntries.stream()
                 .filter(s -> ! s.equals("{}"))
                 .map(s -> gson.fromJson(s, CustomerEntity.class))
                 .toList();
@@ -51,6 +49,29 @@ public class LogAnalyzer {
             }
         });
         distribution2.forEach((searchParam, atomicLong) -> System.out.println(searchParam + ", " + atomicLong));
+
+        List<String> selskapEntries = LogParsers.readJsonFromCsvColumn(
+                "src/main/resources/selskap_7_days.csv",
+                "_raw",
+                "Entity: ");
+        System.out.println("Selskap-entries: " + selskapEntries.size());
+
+        System.out.println();
+        System.out.println();
+        List<SelskapEntity> selskapEntities = selskapEntries.stream()
+                .filter(s -> ! s.equals("{}"))
+                .map(s -> gson.fromJson(s, SelskapEntity.class))
+                .toList();
+        final ConcurrentMap<SelskapSearchParam, AtomicLong> distribution3 = new ConcurrentHashMap<>();
+        selskapEntities.forEach(selskapEntity -> {
+            for (SelskapSearchParam searchParam : SelskapSearchParam.values()) {
+                if (selskapEntity.isNotEmpty(searchParam.name())) {
+                    distribution3.putIfAbsent(searchParam, new AtomicLong(0));
+                    distribution3.get(searchParam).incrementAndGet();
+                }
+            }
+        });
+        distribution3.forEach((searchParam, atomicLong) -> System.out.println(searchParam + ", " + atomicLong));
 
     }
 }

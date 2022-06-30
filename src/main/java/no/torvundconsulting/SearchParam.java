@@ -15,6 +15,5 @@ public enum SearchParam {
     objekttype,
     objektkategori,
     medlem,
-    beboer,
-    fritekst
+    beboer
 }
